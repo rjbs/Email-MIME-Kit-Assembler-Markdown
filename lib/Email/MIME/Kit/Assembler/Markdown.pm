@@ -7,6 +7,8 @@ use Email::MIME::Creator;
 use Moose::Util::TypeConstraints qw(maybe_type role_type);
 use Text::Markdown;
 
+=for Pod::Coverage assemble BUILD
+
 =head1 SYNOPSIS
 
 In your mkit's (JSON, here) manifest:
@@ -78,9 +80,6 @@ has path => (
 sub BUILD {
   my ($self) = @_;
   my $class = ref $self;
-
-  use Data::Dumper;
-  warn Dumper($self->manifest);
 
   confess "$class does not support alternatives"
     if @{ $self->manifest->{alternatives} || [] };
