@@ -1,10 +1,50 @@
 package Email::MIME::Kit::Assembler::Markdown;
 use Moose;
 with 'Email::MIME::Kit::Role::Assembler';
+# ABSTRACT: build multipart/alternative messages from Markdown alone
 
 use Email::MIME::Creator;
 use Moose::Util::TypeConstraints qw(maybe_type role_type);
 use Text::Markdown;
+
+=head1 SYNOPSIS
+
+In your mkit's (JSON, here) manifest:
+
+  {
+    "renderer" : "TT",
+    "assembler": [
+      "Markdown",
+      { "html_wrapper": "wrapper.html" }
+    ],
+    "path"  : "body.mkdn",
+    "header": [
+      { "Subject": "DynaWoop is now hiring!" },
+      { "From"   : "[% from_addr  %]" }
+      { "To"     : "[% user.email %]" }
+    ]
+  }
+
+This kit will build a multipart/alternative message with a plaintext part
+(containing the rendered contents of F<body.mkdn> ) and an HTML part
+(containing F<body.mkdn> rendered into HTML using Markdown).
+
+At present, attachments are not supported.  Actually, quite a few things found
+in the standard assembler are not yet supported.  The standard assembler
+desperately needs to be refactored to make its features easier to incorporate
+into other assemblers.
+
+The C<html_wrapper> parameter for the Markdown assembler is the path to a kit
+entry.  If given, that kit entry will be used for the HTML part, and the
+Markdown-produced HTML will be injected into it, replacing a comment containing
+the C<marker> given in the Markdown assembler's configuration.  The default
+marker is C<CONTENT>, so the F<wrapper.html> used above might read as follows:
+
+  <h1>DynaWoop Dynamic Woopages</h1>
+  <!-- CONTENT -->
+  <p>Click to unsubscribe: <a href="[% unsub_url %]">here</a></p>
+
+=cut
 
 has manifest => (
   is       => 'ro',
