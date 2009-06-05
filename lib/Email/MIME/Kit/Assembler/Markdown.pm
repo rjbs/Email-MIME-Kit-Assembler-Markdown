@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 package Email::MIME::Kit::Assembler::Markdown;
 use Moose;
 with 'Email::MIME::Kit::Role::Assembler';
@@ -54,6 +56,11 @@ has manifest => (
 );
 
 has html_wrapper => (
+  is  => 'ro',
+  isa => 'Str',
+);
+
+has text_wrapper => (
   is  => 'ro',
   isa => 'Str',
 );
@@ -133,18 +140,25 @@ sub assemble {
     $markdown = $$output_ref;
   }
 
-  my $html_content = Text::Markdown->new(tab_width => 2)->markdown($markdown);
-  my $wrapper_path = $self->html_wrapper;
-  if ($wrapper_path) {
-    my $wrapper = ${ $self->kit->get_kit_entry($wrapper_path) };
-    my $marker  = $self->marker;
-    my $marker_re = qr{<!--\s+\Q$marker\E\s+-->};
+  my %contents = (
+    html_wrapper => Text::Markdown->new(tab_width => 2)->markdown($markdown),
+    text_wrapper => $markdown,
+  );
+  for my $content_wrapper ( qw/html_wrapper text_wrapper/ ) {
+    my $wrapper_path = $self->$content_wrapper;
+    if($wrapper_path) {
+      my $wrapper = ${ $self->kit->get_kit_entry($wrapper_path) };
+      my $marker  = $self->marker;
+      my $marker_re = $content_wrapper eq 'html_wrapper' 
+                                       ? qr{<!--\s+\Q$marker\E\s+-->}
+                                       : qr{\s+\Q$marker\E\s+};
 
-    confess 'html_wrapper content does not contain comment containing marker'
-      unless $wrapper =~ $marker_re;
+      confess "$content_wrapper content does not contain comment containing marker"
+        unless $wrapper =~ $marker_re;
 
-    $wrapper =~ s/$marker_re/$html_content/;
-    $html_content = $wrapper;
+      $wrapper =~ s/$marker_re/$contents{$content_wrapper}/;
+      $contents{$wrapper} = $wrapper;
+    }
   }
 
   my $header = $self->_prep_header(
@@ -153,7 +167,7 @@ sub assemble {
   );
 
   my $html_part = Email::MIME->create(
-    body   => $html_content,
+    body   => $contents{html_wrapper},
     attributes => {
       content_type => "text/html",
       charset      => 'utf-8',
@@ -162,7 +176,7 @@ sub assemble {
   );
 
   my $text_part = Email::MIME->create(
-    body   => $markdown,
+    body   => $contents{text_wrapper},
     attributes => {
       content_type => "text/plain",
       charset      => 'utf-8',

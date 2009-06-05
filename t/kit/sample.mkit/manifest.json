@@ -1,6 +1,8 @@
 {
   "renderer" : "TestRenderer",
-  "assembler": [ "Markdown", { "html_wrapper": "wrapper.html" } ],
+  "assembler": [ "Markdown", 
+                { "html_wrapper": "wrapper.html", "text_wrapper": "wrapper.txt" }
+               ],
   "path"  : "body.mkdn",
   "header": [
     { "Subject": "this is a markdown test" },
