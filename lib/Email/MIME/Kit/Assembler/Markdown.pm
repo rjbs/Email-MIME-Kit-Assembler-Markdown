@@ -1,5 +1,3 @@
-use strict;
-use warnings;
 package Email::MIME::Kit::Assembler::Markdown;
 use Moose;
 with 'Email::MIME::Kit::Role::Assembler';
