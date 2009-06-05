@@ -46,6 +46,10 @@ marker is C<CONTENT>, so the F<wrapper.html> used above might read as follows:
   <!-- CONTENT -->
   <p>Click to unsubscribe: <a href="[% unsub_url %]">here</a></p>
 
+The C<text_wrapper> setting works exactly the same way, down to looking for an
+HTML-like comment containing the marker.  It wraps the Markdown content after
+it has been rendered by the kit's Renderer, if any.
+
 =cut
 
 has manifest => (
@@ -138,24 +142,24 @@ sub assemble {
     $markdown = $$output_ref;
   }
 
-  my %contents = (
-    html_wrapper => Text::Markdown->new(tab_width => 2)->markdown($markdown),
-    text_wrapper => $markdown,
+  my %content = (
+    html => Text::Markdown->new(tab_width => 2)->markdown($markdown),
+    text => $markdown,
   );
-  for my $content_wrapper ( qw/html_wrapper text_wrapper/ ) {
-    my $wrapper_path = $self->$content_wrapper;
-    if($wrapper_path) {
+
+  for my $type (keys %content) {
+    my $type_wrapper = "$type\_wrapper";
+
+    if (my $wrapper_path = $self->$type_wrapper) {
       my $wrapper = ${ $self->kit->get_kit_entry($wrapper_path) };
       my $marker  = $self->marker;
-      my $marker_re = $content_wrapper eq 'html_wrapper' 
-                                       ? qr{<!--\s+\Q$marker\E\s+-->}
-                                       : qr{\s+\Q$marker\E\s+};
+      my $marker_re = qr{<!--\s+\Q$marker\E\s+-->};
 
-      confess "$content_wrapper content does not contain comment containing marker"
+      confess "$type_wrapper does not contain comment containing marker"
         unless $wrapper =~ $marker_re;
 
-      $wrapper =~ s/$marker_re/$contents{$content_wrapper}/;
-      $contents{$wrapper} = $wrapper;
+      $wrapper =~ s/$marker_re/$content{$type}/;
+      $content{$type} = $wrapper;
     }
   }
 
@@ -165,7 +169,7 @@ sub assemble {
   );
 
   my $html_part = Email::MIME->create(
-    body   => $contents{html_wrapper},
+    body   => $content{html},
     attributes => {
       content_type => "text/html",
       charset      => 'utf-8',
@@ -174,7 +178,7 @@ sub assemble {
   );
 
   my $text_part = Email::MIME->create(
-    body   => $contents{text_wrapper},
+    body   => $content{text},
     attributes => {
       content_type => "text/plain",
       charset      => 'utf-8',
