@@ -3,7 +3,7 @@ use Moose;
 with 'Email::MIME::Kit::Role::Assembler';
 # ABSTRACT: build multipart/alternative messages from Markdown alone
 
-use Email::MIME::Creator;
+use Email::MIME 1.900;
 use Moose::Util::TypeConstraints qw(maybe_type role_type);
 use Text::Markdown;
 
@@ -123,10 +123,6 @@ sub _prep_header {
       $value = ${ $renderer->render(\$value, $stash) } if defined $renderer;
     }
 
-    {
-      use bytes;
-      $value = Encode::encode('MIME-Q', $value) if $value =~ /[\x80-\xff]/;
-    }
     push @done_header, $hval[0] => $value;
   }
 
@@ -187,8 +183,8 @@ sub assemble {
   );
 
   my $container = Email::MIME->create(
-    header => $header,
-    parts  => [ $text_part, $html_part ],
+    header_str => $header,
+    parts      => [ $text_part, $html_part ],
     attributes => { content_type => 'multipart/alternative' },
   );
 
