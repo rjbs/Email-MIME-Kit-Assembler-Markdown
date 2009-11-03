@@ -1,4 +1,7 @@
 Revision history for {{$dist->name}}
 
-{{$NEXT}}
+2.093070  2009-11-03
+          improve handling of header encoding
+
+0.091560  2009-06-05 21:14:31 UTC
           add text_wrapper to parallel html_wrapper (APEIRON)
