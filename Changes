@@ -1,5 +1,8 @@
 Revision history for {{$dist->name}}
 
+{{$NEXT}}
+          repackage to add META.yml
+
 0.093070  2009-11-03
           improve handling of header encoding
 
