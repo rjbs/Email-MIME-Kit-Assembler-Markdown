@@ -50,6 +50,11 @@ The C<text_wrapper> setting works exactly the same way, down to looking for an
 HTML-like comment containing the marker.  It wraps the Markdown content after
 it has been rendered by the kit's Renderer, if any.
 
+If given (and true), the C<munge_signature> option will perform some basic
+munging of a sigdash-prefixed signature in the source text, hardening line
+breaks.  The specific munging performed is not guaranteed to remain exactly
+stable.
+
 =cut
 
 has manifest => (
@@ -65,6 +70,12 @@ has html_wrapper => (
 has text_wrapper => (
   is  => 'ro',
   isa => 'Str',
+);
+
+has munge_signature => (
+  is  => 'ro',
+  isa => 'Bool',
+  default => 0,
 );
 
 has renderer => (
@@ -131,16 +142,27 @@ sub _prep_header {
 
 sub assemble {
   my ($self, $stash) = @_;
-  
+
   my $markdown = ${ $self->kit->get_kit_entry( $self->path ) };
   if ($self->renderer) {
     my $output_ref = $self->renderer->render(\$markdown, $stash);
     $markdown = $$output_ref;
   }
 
+  my $plaintext = $markdown;
+
+  if ($self->munge_signature) {
+    my ($body, $sig) = split /^-- $/m, $markdown, 2;
+
+    if (defined $sig) {
+      $sig =~ s{^}{<br />}mg;
+      $markdown = "$body\n\n$sig";
+    }
+  }
+
   my %content = (
     html => Text::Markdown->new(tab_width => 2)->markdown($markdown),
-    text => $markdown,
+    text => $plaintext,
   );
 
   for my $type (keys %content) {

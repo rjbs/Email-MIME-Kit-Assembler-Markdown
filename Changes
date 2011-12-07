@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+          add the munge_signature option
 
 0.093071  2011-10-15 18:06:18 Asia/Tokyo
           repackage to add META.yml
