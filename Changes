@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.100000  2011-12-07 12:52:23 America/New_York
           add the munge_signature option
 
 0.093071  2011-10-15 18:06:18 Asia/Tokyo
