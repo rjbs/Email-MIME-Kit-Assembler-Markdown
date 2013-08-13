@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.100001  2013-08-12 21:36:07 America/New_York
+          update bugtracker and repo
+
 0.100000  2011-12-07 12:52:23 America/New_York
           add the munge_signature option
 
