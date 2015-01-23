@@ -1,7 +1,8 @@
 package Email::MIME::Kit::Assembler::Markdown;
+# ABSTRACT: build multipart/alternative messages from Markdown alone
+
 use Moose;
 with 'Email::MIME::Kit::Role::Assembler';
-# ABSTRACT: build multipart/alternative messages from Markdown alone
 
 use Email::MIME 1.900;
 use Moose::Util::TypeConstraints qw(maybe_type role_type);
