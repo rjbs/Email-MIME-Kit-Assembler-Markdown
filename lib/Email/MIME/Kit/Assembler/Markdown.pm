@@ -143,7 +143,7 @@ sub _prep_header {
 sub assemble {
   my ($self, $stash) = @_;
 
-  my $markdown = ${ $self->kit->get_kit_entry( $self->path ) };
+  my $markdown = ${ $self->kit->get_decoded_kit_entry( $self->path ) };
   if ($self->renderer) {
     my $output_ref = $self->renderer->render(\$markdown, $stash);
     $markdown = $$output_ref;
@@ -169,7 +169,7 @@ sub assemble {
     my $type_wrapper = "$type\_wrapper";
 
     if (my $wrapper_path = $self->$type_wrapper) {
-      my $wrapper = ${ $self->kit->get_kit_entry($wrapper_path) };
+      my $wrapper = ${ $self->kit->get_decoded_kit_entry($wrapper_path) };
       my $marker  = $self->marker;
       my $marker_re = qr{<!--\s+\Q$marker\E\s+-->};
 
@@ -187,7 +187,7 @@ sub assemble {
   );
 
   my $html_part = Email::MIME->create(
-    body   => $content{html},
+    body_str   => $content{html},
     attributes => {
       content_type => "text/html",
       charset      => 'utf-8',
@@ -196,7 +196,7 @@ sub assemble {
   );
 
   my $text_part = Email::MIME->create(
-    body   => $content{text},
+    body_str   => $content{text},
     attributes => {
       content_type => "text/plain",
       charset      => 'utf-8',
@@ -210,7 +210,7 @@ sub assemble {
     attributes => { content_type => 'multipart/alternative' },
   );
 
-  return $container; 
+  return $container;
 }
 
 no Moose;

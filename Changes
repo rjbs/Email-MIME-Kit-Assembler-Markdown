@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - make more sensibly compatible with Email::MIME::Kit v3's
+          decoded-text expectations
 
 0.100001  2013-08-12 21:36:07 America/New_York
           update bugtracker and repo
