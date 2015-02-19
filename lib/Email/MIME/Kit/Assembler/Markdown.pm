@@ -216,4 +216,5 @@ sub assemble {
 
 no Moose;
 no Moose::Util::TypeConstraints;
+__PACKAGE__->meta->make_immutable;
 1;

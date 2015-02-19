@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - immutabilize class after construction
 
 0.100002  2015-01-23 15:17:20-05:00 America/New_York
         - make more sensibly compatible with Email::MIME::Kit v3's
