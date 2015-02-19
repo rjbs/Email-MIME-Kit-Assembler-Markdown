@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.100003  2015-02-19 13:23:21-05:00 America/New_York
         - immutabilize class after construction
 
 0.100002  2015-01-23 15:17:20-05:00 America/New_York
