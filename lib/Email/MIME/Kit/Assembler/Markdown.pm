@@ -188,9 +188,7 @@ sub assemble {
         $stash->{wrapped_content} = $content{$type};
         my $output_ref = $self->renderer->render(\$wrapper, $stash);
         $content{$type} = $$output_ref;
-      }
-
-      else {
+      } else {
         my $marker  = $self->marker;
         my $marker_re = qr{<!--\s+\Q$marker\E\s+-->};
 
