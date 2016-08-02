@@ -4,13 +4,13 @@ use Test::More;
 use Email::MIME::Kit;
 use Email::MIME::Kit::Assembler::Markdown;
 
-for my $suffix ('', '-munge') {
+for my $suffix ('', '-munge', '-renderer') {
   my $path = "t/kit/sample$suffix.mkit";
 
   subtest $path => sub {
     my $kit = Email::MIME::Kit->new({ source => $path });
 
-    my $email = $kit->assemble;
+    my $email = $kit->assemble({ mail_type => 'electrical', endorsement_type => 'PAID' });
 
     my @parts = $email->subparts;
 

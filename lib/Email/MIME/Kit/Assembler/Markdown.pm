@@ -56,6 +56,12 @@ munging of a sigdash-prefixed signature in the source text, hardening line
 breaks.  The specific munging performed is not guaranteed to remain exactly
 stable.
 
+If given (and true), the C<use_renderer> option will cause the kit entry to be
+passed through the renderer named in the kit. That is to say, the kit entry is
+a template. In this case, the C<marker> comment is ignored. Instead, the
+wrapped content (Markdown-produced HTML or text) is available in a template
+parameter called C<wrapped_content>, and should be included that way.
+
 =cut
 
 has manifest => (
@@ -76,6 +82,12 @@ has text_wrapper => (
 has munge_signature => (
   is  => 'ro',
   isa => 'Bool',
+  default => 0,
+);
+
+has use_renderer => (
+  is      => 'ro',
+  isa     => 'Bool',
   default => 0,
 );
 
@@ -171,14 +183,23 @@ sub assemble {
 
     if (my $wrapper_path = $self->$type_wrapper) {
       my $wrapper = ${ $self->kit->get_decoded_kit_entry($wrapper_path) };
-      my $marker  = $self->marker;
-      my $marker_re = qr{<!--\s+\Q$marker\E\s+-->};
 
-      confess "$type_wrapper does not contain comment containing marker"
-        unless $wrapper =~ $marker_re;
+      if ($self->use_renderer) {
+        $stash->{wrapped_content} = $content{$type};
+        my $output_ref = $self->renderer->render(\$wrapper, $stash);
+        $content{$type} = $$output_ref;
+      }
 
-      $wrapper =~ s/$marker_re/$content{$type}/;
-      $content{$type} = $wrapper;
+      else {
+        my $marker  = $self->marker;
+        my $marker_re = qr{<!--\s+\Q$marker\E\s+-->};
+
+        confess "$type_wrapper does not contain comment containing marker"
+          unless $wrapper =~ $marker_re;
+
+        $wrapper =~ s/$marker_re/$content{$type}/;
+        $content{$type} = $wrapper;
+      }
     }
   }
 
