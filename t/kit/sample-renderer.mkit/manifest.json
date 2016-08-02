@@ -6,7 +6,7 @@
     {
       "html_wrapper" : "wrapper.html",
       "text_wrapper" : "wrapper.txt",
-      "use_renderer" : true
+      "render_wrapper" : true
     }
   ],
   "header" : [
