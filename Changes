@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.100004  2016-08-01 22:57:35-04:00 America/New_York
         - add the `render_wrapper` option to treat the wrapper as a
           text to be rendered rather than a thing with a single token in it
           (thanks, Rob Norris!)
