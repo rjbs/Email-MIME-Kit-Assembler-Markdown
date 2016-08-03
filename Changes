@@ -2,6 +2,13 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.100005  2016-08-03 09:47:33-04:00 America/New_York
+        - Bool options now accept any value, meaning that JSON booleans work
+          even from weirdo versions that don't work with Bool
+
+          It also means that you can pass [1,2,3] to the option, so pay
+          attention and don't screw up. :)
+
 0.100004  2016-08-01 22:57:35-04:00 America/New_York
         - add the `render_wrapper` option to treat the wrapper as a
           text to be rendered rather than a thing with a single token in it
