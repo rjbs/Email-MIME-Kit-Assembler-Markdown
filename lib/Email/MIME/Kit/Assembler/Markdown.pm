@@ -81,13 +81,17 @@ has text_wrapper => (
 
 has munge_signature => (
   is  => 'ro',
-  isa => 'Bool',
+  # XXX Removed because JSON booly objects (and YAML?) aren't consistently
+  # compatible with Moose's Bool type. -- rjbs, 2016-08-03
+  # isa => 'Bool',
   default => 0,
 );
 
 has render_wrapper => (
   is      => 'ro',
-  isa     => 'Bool',
+  # XXX Removed because JSON booly objects (and YAML?) aren't consistently
+  # compatible with Moose's Bool type. -- rjbs, 2016-08-03
+  # isa     => 'Bool',
   default => 0,
 );
 
