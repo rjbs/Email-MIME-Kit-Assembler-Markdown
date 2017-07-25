@@ -7,6 +7,7 @@ with 'Email::MIME::Kit::Role::Assembler';
 use Email::MIME 1.900;
 use Moose::Util::TypeConstraints qw(maybe_type role_type);
 use Text::Markdown;
+use HTML::Entities ();
 
 =for Pod::Coverage assemble BUILD
 
@@ -62,6 +63,10 @@ is a template. In this case, the C<marker> comment is ignored. Instead, the
 wrapped content (Markdown-produced HTML or text) is available in a template
 parameter called C<wrapped_content>, and should be included that way.
 
+If given (and true), the C<encode_entities> option will cause HTML in the
+source text to be entity encoded in the HTML part (and passed through
+unmodified in the plain text part)
+
 =cut
 
 has manifest => (
@@ -92,6 +97,11 @@ has render_wrapper => (
   # XXX Removed because JSON booly objects (and YAML?) aren't consistently
   # compatible with Moose's Bool type. -- rjbs, 2016-08-03
   # isa     => 'Bool',
+  default => 0,
+);
+
+has encode_entities => (
+  is      => 'ro',
   default => 0,
 );
 
@@ -168,6 +178,10 @@ sub assemble {
 
   my $plaintext = $markdown;
 
+  if ($self->encode_entities) {
+    $markdown = HTML::Entities::encode_entities($markdown);
+  }
+
   if ($self->munge_signature) {
     my ($body, $sig) = split /^-- $/m, $markdown, 2;
 
@@ -176,6 +190,7 @@ sub assemble {
       $markdown = "$body\n\n$sig";
     }
   }
+
 
   my %content = (
     html => Text::Markdown->new(tab_width => 2)->markdown($markdown),
