@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+        - added encode_entities to HTML entity encode variables in the HTML
+          part (thanks, Michael McClimon!)
 
 0.100005  2016-08-03 09:47:33-04:00 America/New_York
         - Bool options now accept any value, meaning that JSON booleans work
