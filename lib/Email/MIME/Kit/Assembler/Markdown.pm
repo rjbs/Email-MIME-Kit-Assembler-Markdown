@@ -191,7 +191,6 @@ sub assemble {
     }
   }
 
-
   my %content = (
     html => Text::Markdown->new(tab_width => 2)->markdown($markdown),
     text => $plaintext,
