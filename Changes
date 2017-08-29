@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.100006  2017-08-29 15:59:19-04:00 America/New_York
         - added encode_entities to HTML entity encode variables in the HTML
           part (thanks, Michael McClimon!)
 
