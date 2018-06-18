@@ -170,13 +170,21 @@ sub _prep_header {
 sub assemble {
   my ($self, $stash) = @_;
 
-  my $markdown = ${ $self->kit->get_decoded_kit_entry( $self->path ) };
-  if ($self->renderer) {
-    my $output_ref = $self->renderer->render(\$markdown, $stash);
-    $markdown = $$output_ref;
-  }
-
+  my $markdown  = ${ $self->kit->get_decoded_kit_entry( $self->path ) };
   my $plaintext = $markdown;
+
+  if ($self->renderer) {
+    {
+      local $stash->{part_type} = 'text';
+      my $output = $self->renderer->render(\$markdown, $stash);
+      $plaintext = ${ $self->renderer->render(\$markdown, $stash) };
+    }
+
+    {
+      local $stash->{part_type} = 'html';
+      $markdown = ${ $self->renderer->render(\$markdown, $stash) };
+    }
+  }
 
   if ($self->encode_entities) {
     $markdown = HTML::Entities::encode_entities($markdown);
@@ -203,7 +211,8 @@ sub assemble {
       my $wrapper = ${ $self->kit->get_decoded_kit_entry($wrapper_path) };
 
       if ($self->render_wrapper) {
-        $stash->{wrapped_content} = $content{$type};
+        local $stash->{wrapped_content} = $content{$type};
+        local $stash->{part_type}       = $type;
         my $output_ref = $self->renderer->render(\$wrapper, $stash);
         $content{$type} = $$output_ref;
       } else {
