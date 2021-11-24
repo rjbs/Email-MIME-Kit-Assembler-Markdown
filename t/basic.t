@@ -81,4 +81,21 @@ subtest "rendering_html" => sub {
   unlike($parts[1]->body, qr{type:\s+text},         "w.render type: !text");
 };
 
+subtest "line-skip marker" => sub {
+  my $kit = Email::MIME::Kit->new({ source => "t/kit/sample-skip.mkit" });
+  my $email = $kit->assemble({});
+
+  my ($plain, $html) = $email->subparts;
+
+  my @html_hunks = qw( <center> </center> <bold> </bold> );
+
+  for my $hunk (@html_hunks) {
+    unlike($plain->body_str, qr{\Q$hunk}, "plain does not contain $hunk");
+    like($html->body_str, qr{\Q$hunk}, "html does contain $hunk");
+  }
+
+  unlike($plain->body_str, qr{SKIP.LINE}, "skip marker is not in plain text");
+  unlike($html->body_str,  qr{SKIP.LINE}, "skip marker is not in html");
+};
+
 done_testing;

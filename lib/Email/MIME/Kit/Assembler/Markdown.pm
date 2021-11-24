@@ -67,6 +67,13 @@ If given (and true), the C<encode_entities> option will cause HTML in the
 source text to be entity encoded in the HTML part (and passed through
 unmodified in the plain text part)
 
+The comment C<< <!-- SKIP-LINE --> >> may be included on any line of the source
+document.  Lines containing that substring will not be included in the final
+plaintext part, but will be included in the HTML part.  (The comment itself
+will be removed.)  This allows adding extra HTML to the Markdown without it
+remaining, annoyingly, in the text part.  To change the exact text looked for
+from C<SKIP-LINE>, you can set the C<skip_marker> attribute of the assembler.
+
 =cut
 
 has manifest => (
@@ -116,6 +123,8 @@ has renderer => (
 );
 
 has marker => (is => 'ro', isa => 'Str', default => 'CONTENT');
+
+has skip_marker => (is => 'ro', isa => 'Str', default => 'SKIP-LINE');
 
 has path => (
   is   => 'ro',
@@ -173,6 +182,7 @@ sub assemble {
   my $markdown  = ${ $self->kit->get_decoded_kit_entry( $self->path ) };
   my $plaintext = $markdown;
 
+
   if ($self->renderer) {
     {
       local $stash->{part_type} = 'text';
@@ -185,6 +195,13 @@ sub assemble {
       $markdown = ${ $self->renderer->render(\$markdown, $stash) };
     }
   }
+
+  # We'll remove any line containing <!-- SKIP-LINE --> from the plain text
+  # part.  Meanwhile, the comment is removed from the Markdown, but the rest of
+  # the line is left intact. -- rjbs, 2021-11-23
+  my $skip_marker = $self->skip_marker;
+  $plaintext =~ s{^.*<!--\s+\Q$skip_marker\E\s+-->.*$}{}mg;
+  $markdown  =~ s{<!--\s+\Q$skip_marker\E\s+-->}{}mg;
 
   if ($self->encode_entities) {
     $markdown = HTML::Entities::encode_entities($markdown);
