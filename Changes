@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.100008  2022-10-22 16:18:22-04:00 America/New_York
         - prep next release
 
 0.100007  2018-06-18 17:58:45-04:00 America/New_York (TRIAL RELEASE)
