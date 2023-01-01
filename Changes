@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.100009  2022-12-31 21:29:45-05:00 America/New_York
         - update author contact info
 
 0.100008  2022-10-22 16:18:22-04:00 America/New_York
